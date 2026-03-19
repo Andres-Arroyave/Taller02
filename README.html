@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taller 2 – ADT Matriz y evaluación de algoritmos</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 1rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1, h2, h3 { margin-top: 1.2em; margin-bottom: 0.4em; }
+    h1 { font-size: 1.25rem; }
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: 1rem; }
+    pre, code { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; background: #f5f5f5; padding: 0.15em 0.35em; border-radius: 3px; }
+    pre { padding: 0.6em; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    ul, ol { margin: 0.4em 0; padding-left: 1.5em; }
+    li { margin: 0.2em 0; }
+    table { border-collapse: collapse; width: 100%; margin: 0.6em 0; }
+    th, td { border: 1px solid #ccc; padding: 0.35em 0.6em; text-align: left; }
+    th { background: #eee; }
+    hr { border: none; border-top: 1px solid #ccc; margin: 1em 0; }
+    .math { font-style: italic; }
+    blockquote { margin: 0.6em 0; padding-left: 1em; border-left: 3px solid #999; color: #444; }
+  </style>
+</head>
+<body>
+
+<h1>Taller 2 – ADT Matriz y evaluación de algoritmos</h1>
+
+<p><strong>Asignatura</strong>: Estructuras de Datos y Algoritmos<br>
+<strong>Tema</strong>: ADT Matriz, operaciones básicas y evaluación analítica / experimental<br>
+<strong>Integrantes (IDs)</strong>: 000528458, 000547528, 000558767<br>
+<strong>Concatenación usada para el hash</strong>: <code>000528458000547528000558767</code><br>
+<strong>SHA-256</strong>: <code>c1abe9b66a84944396ffa21eef659b785a7baeb030a72c0c213daff1c328b1d9</code><br>
+<strong>hashEquipo</strong>: 2 (módulo 5 del hash anterior)<br>
+<strong>Algoritmo asignado</strong>: <strong>Algoritmo 2 – Generación de cuadrados mágicos (tamaño impar)</strong>.</p>
+
+<hr>
+
+<h1>Estructura del proyecto</h1>
+
+<ul>
+  <li><strong>matrix.py</strong>: Implementación del <strong>ADT Matriz</strong> inmutable, incluyendo:
+    <ul>
+      <li>Constructor y representación interna.</li>
+      <li>Métodos <code>__eq__</code>, <code>__str__</code>, operaciones de <strong>suma</strong> y <strong>producto</strong> de matrices.</li>
+      <li>Constructores auxiliares: <code>from_flat</code>, <code>identity</code>.</li>
+      <li>Método estático <code>magic_square_odd</code> (Algoritmo 2 – cuadrados mágicos de tamaño impar).</li>
+      <li>Método de apoyo <code>is_magic_square</code> para validación en pruebas.</li>
+      <li>Al ejecutarlo como script (<code>python matrix.py</code>) imprime por consola ejemplos de cuadrados mágicos 3×3 y 5×5.</li>
+    </ul>
+  </li>
+  <li><strong>test_matrix.py</strong>: Pruebas unitarias para:
+    <ul>
+      <li><code>__eq__</code> (equals).</li>
+      <li><code>add</code> (suma de matrices).</li>
+      <li><code>multiply</code> (producto de matrices).</li>
+      <li><code>magic_square_odd</code> (generación de cuadrados mágicos) e <code>is_magic_square</code>.</li>
+    </ul>
+  </li>
+  <li><strong>experiments_magic_square.py</strong>:
+    <ul>
+      <li>Script de <strong>evaluación experimental</strong> del algoritmo de cuadrados mágicos.</li>
+      <li>Cálculo de tiempos promedio (formato fijo <code>.f</code> en segundos).</li>
+      <li>Escribe los datos en <strong>tiempos_cuadrados_magicos.csv</strong> para uso en Excel/LibreOffice.</li>
+      <li>Ajuste de curva lineal y cálculo de <strong>R²</strong>.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<h1>1. ADT Matriz (matrix.py)</h1>
+
+<h2>1.1. Representación e inmutabilidad</h2>
+
+<p>El ADT <code>Matrix</code> representa una matriz de tamaño m × n de valores reales (tipo <code>float</code> en Python).</p>
+
+<ul>
+  <li>El constructor recibe una secuencia de secuencias (<code>Sequence[Sequence[Number]]</code>).</li>
+  <li>Se valida que:
+    <ul>
+      <li>Haya al menos <strong>1 fila</strong> y <strong>1 columna</strong>.</li>
+      <li>Todas las filas tengan la <strong>misma longitud</strong> (matriz rectangular).</li>
+    </ul>
+  </li>
+  <li>Los datos se normalizan a <code>float</code> y se almacenan como:</li>
+</ul>
+
+<pre><code>Tuple[Tuple[Number, ...], ...]</code></pre>
+
+<p>es decir, una <strong>tupla de tuplas</strong>, lo cual:</p>
+
+<ul>
+  <li>Evita que el usuario pueda modificar la estructura interna (inmutabilidad lógica).</li>
+  <li>Garantiza que, una vez creada la matriz, su contenido no cambia.</li>
+</ul>
+
+<p>Interfaz principal:</p>
+
+<ul>
+  <li><strong>Propiedades</strong>:
+    <ul>
+      <li><code>rows: int</code> – número de filas m.</li>
+      <li><code>cols: int</code> – número de columnas n.</li>
+    </ul>
+  </li>
+  <li><strong>Métodos</strong>:
+    <ul>
+      <li><code>shape() -&gt; (int, int)</code> – retorna <code>(rows, cols)</code>.</li>
+      <li><code>__getitem__(index: int)</code> – permite acceso tipo <code>matrix[i][j]</code>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2>1.2. Métodos heredados de Object</h2>
+
+<ul>
+  <li><strong>__eq__(self, other)</strong>:
+    <ul>
+      <li>Si <code>other</code> no es instancia de <code>Matrix</code>, retorna <code>NotImplemented</code> (comportamiento estándar de Python).</li>
+      <li>Si sí lo es, compara las tuplas internas <code>self._data == other._data</code>.</li>
+      <li>Dado que los datos se almacenan como <code>float</code> exactos para nuestros casos (valores enteros y sumas/productos de enteros), la comparación exacta es adecuada para las pruebas requeridas.</li>
+    </ul>
+  </li>
+  <li><strong>__str__(self)</strong>:
+    <ul>
+      <li>Retorna una representación legible de la matriz, por filas:
+        <ul>
+          <li>Cada fila se muestra como <code>[a b c ...]</code>.</li>
+          <li>Se usa el formato <code>"{x:g}"</code> para evitar notación científica innecesaria.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Ejemplo de salida:</p>
+
+<pre><code>[1 2 3]
+[4 5 6]</code></pre>
+
+<hr>
+
+<h1>2. Algoritmo 2 – Generación de cuadrados mágicos (tamaño impar)</h1>
+
+<h2>2.1. Definición de cuadrado mágico</h2>
+
+<p>Una matriz cuadrada de orden n es un <strong>cuadrado mágico</strong> si:</p>
+
+<ul>
+  <li>Está llena con los enteros del 1 al n² (en nuestro caso representados como <code>float</code>), <strong>sin repetición</strong>.</li>
+  <li>La suma de cada fila, cada columna y de las dos diagonales principales es constante e igual a:</li>
+</ul>
+
+<p class="math">M = n(n² + 1) / 2</p>
+
+<h2>2.2. Método implementado: <code>Matrix.magic_square_odd(n)</code></h2>
+
+<p>Se implementa el algoritmo clásico de <strong>Siam</strong> (también conocido como método de De la Loubère) para órdenes impares:</p>
+
+<p><strong>Precondiciones:</strong></p>
+
+<ul>
+  <li><code>n</code> debe ser entero, <strong>positivo</strong> e <strong>impar</strong>.<br>
+  Si <code>n &lt;= 0</code> o <code>n % 2 == 0</code>, se lanza <code>ValueError</code>.</li>
+</ul>
+
+<p><strong>Idea del algoritmo:</strong></p>
+
+<ol>
+  <li>Crear una matriz local <code>magic</code> de tamaño n × n inicializada en ceros.</li>
+  <li>Inicializar:
+    <ul>
+      <li>Posición inicial en la <strong>fila 0</strong> y <strong>columna n//2</strong> (centro de la primera fila).</li>
+      <li>Contador <code>num = 1</code> hasta <code>max_num = n*n</code>.</li>
+    </ul>
+  </li>
+  <li>Mientras <code>num &lt;= n²</code>:
+    <ul>
+      <li>Asignar <code>magic[i][j] = num</code>.</li>
+      <li>Incrementar <code>num</code>.</li>
+      <li>Calcular la posición candidata:
+        <ul>
+          <li><code>new_i = (i - 1) % n</code> (una fila arriba).</li>
+          <li><code>new_j = (j + 1) % n</code> (una columna a la derecha).</li>
+        </ul>
+      </li>
+      <li>Si la celda <code>(new_i, new_j)</code> está <strong>ocupada</strong> (<code>!= 0</code>):
+        <ul>
+          <li>Moverse <strong>una fila hacia abajo</strong> desde la posición actual: <code>i = (i + 1) % n</code> (la columna <code>j</code> no cambia).</li>
+        </ul>
+      </li>
+      <li>En caso contrario:
+        <ul>
+          <li>Actualizar <code>i, j = new_i, new_j</code>.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Al final, envolver la matriz <code>magic</code> en un objeto <code>Matrix</code> inmutable.</li>
+</ol>
+
+<p>Este método se corresponde con el algoritmo solicitado en el enunciado para cuadrados mágicos de <strong>tamaño impar</strong>.</p>
+
+<h2>2.3. Método de validación: <code>Matrix.is_magic_square()</code></h2>
+
+<p>Se implementa un método de apoyo, usado exclusivamente en pruebas, que verifica:</p>
+
+<ol>
+  <li>Que la matriz sea cuadrada: <code>rows == cols</code>.</li>
+  <li>Que todas las filas sumen el valor mágico teórico M.</li>
+  <li>Que todas las columnas sumen M.</li>
+  <li>Que las dos diagonales principales sumen M.</li>
+</ol>
+
+<p>Si alguna de estas condiciones falla, retorna <code>False</code>; en caso contrario, <code>True</code>.</p>
+
+<hr>
+
+<h1>3. Evaluación analítica del algoritmo de cuadrados mágicos</h1>
+
+<h2>3.1. Modelo de costo adoptado</h2>
+
+<ul>
+  <li>Las llamadas a funciones que recorren estructuras (por ejemplo, el constructor de <code>Matrix</code>) se analizan según la cantidad de elementos que procesan.</li>
+</ul>
+
+<p>También se consideran dos fases diferenciadas:</p>
+
+<ol>
+  <li><strong>Construcción del arreglo local <code>magic</code></strong> de tamaño n × n.</li>
+  <li><strong>Bucle principal</strong> que coloca los valores del 1 al n².</li>
+  <li><strong>Construcción del objeto <code>Matrix</code></strong> a partir de <code>magic</code>.</li>
+</ol>
+
+<h2>3.2. Conteo aproximado de operaciones</h2>
+
+<ol>
+  <li><strong>Inicialización de la matriz local <code>magic</code></strong>:
+    <ul>
+      <li>Se crea una lista de n filas, cada una con n columnas.</li>
+      <li>Número de asignaciones de cero: n².</li>
+      <li>Orden de complejidad: Θ(n²).</li>
+    </ul>
+  </li>
+  <li><strong>Bucle principal</strong> (<code>while num &lt;= max_num</code>):
+    <ul>
+      <li>El bucle se ejecuta exactamente n² veces (una por cada valor de <code>num</code> desde 1 hasta n²).</li>
+      <li>En cada iteración se realizan:
+        <ul>
+          <li>Una asignación a <code>magic[i][j]</code>.</li>
+          <li>Una suma y asignación para incrementar <code>num</code>.</li>
+          <li>Unas pocas operaciones aritméticas (<code>- 1</code>, <code>+ 1</code>, <code>% n</code>) para calcular <code>new_i</code>, <code>new_j</code>.</li>
+          <li>Una comparación y acceso a <code>magic[new_i][new_j]</code>.</li>
+          <li>Un conjunto constante de asignaciones para actualizar <code>i</code> y <code>j</code> (caso ocupado o libre).</li>
+        </ul>
+      </li>
+      <li>Cada iteración cuesta una cantidad constante de operaciones c.</li>
+      <li>Por tanto, el bucle tiene un costo: T_bucle(n) ≈ c · n².</li>
+    </ul>
+  </li>
+  <li><strong>Construcción del objeto <code>Matrix</code></strong>:
+    <ul>
+      <li>El constructor recorre nuevamente todos los elementos de <code>magic</code> para:
+        <ul>
+          <li>Verificar que las filas tienen la misma longitud.</li>
+          <li>Convertir cada valor a <code>float</code>.</li>
+          <li>Copiar los datos en una tupla de tuplas.</li>
+        </ul>
+      </li>
+      <li>Esto implica otro recorrido completo de n² elementos: T_constructor(n) = c' · n².</li>
+    </ul>
+  </li>
+</ol>
+
+<h2>3.3. Función tiempo y notación asintótica</h2>
+
+<p>Sumando los tres componentes:</p>
+
+<p class="math">T(n) = a·n² + b·n² + d·n² + e = k·n² + e</p>
+
+<p>para algunas constantes positivas a, b, d, k, e.</p>
+
+<p>Por tanto, la <strong>función tilde</strong> del tiempo requerido por el algoritmo es:</p>
+
+<p class="math">T̃(n) = Θ(n²)</p>
+
+<p>En términos del tamaño total de la matriz N = n² (número total de elementos), se puede escribir:</p>
+
+<p class="math">N = n² ⇒ T̃(N) = Θ(N)</p>
+
+<p>es decir, el tiempo de ejecución crece <strong>linealmente</strong> con el número de posiciones que deben llenarse en el cuadrado mágico.</p>
+
+<hr>
+
+<h1>4. Evaluación experimental del algoritmo de cuadrados mágicos</h1>
+
+<h2>4.1. Metodología</h2>
+
+<p>Archivo: <code>experiments_magic_square.py</code></p>
+
+<p>Objetivo: obtener una aproximación experimental de la función de tiempo del algoritmo <code>Matrix.magic_square_odd(n)</code> y compararla con el análisis analítico anterior.</p>
+
+<p><strong>Pasos:</strong></p>
+
+<ol>
+  <li>Se definen tamaños impares crecientes:</li>
+</ol>
+
+<pre><code>tamanos = [3, 5, 7, 9, 11, 15, 21, 25, 31, 41, 51]</code></pre>
+
+<ol start="2">
+  <li>Para cada tamaño <code>n</code>:
+    <ul>
+      <li>Se realiza un <strong>"warm up"</strong> llamando una vez a <code>Matrix.magic_square_odd(n)</code> (fuera de la medición) para estabilizar caches.</li>
+      <li>Se ejecuta el algoritmo <code>repeticiones</code> veces, con <code>repeticiones = 5</code>.</li>
+      <li>Se mide el tiempo de cada ejecución con <code>time.perf_counter()</code>.</li>
+      <li>Se calcula el <strong>tiempo promedio</strong> T̄(n) de las 5 ejecuciones.</li>
+    </ul>
+  </li>
+  <li>Los datos se <strong>guardan</strong> en el archivo <code>tiempos_cuadrados_magicos.csv</code> (columnas <code>n</code>, <code>N=n²</code>, <code>tiempo_promedio_segundos</code>, formato de tiempo en decimal <code>.f</code>) y además se <strong>imprimen</strong> por consola.</li>
+  <li>Para el ajuste de curva:
+    <ul>
+      <li>Se toma N = n² como variable independiente.</li>
+      <li>Se ajusta un modelo lineal: T(N) ≈ a·N + b.</li>
+      <li>Se implementa una función <code>regresion_lineal(xs, ys)</code> que calcula:
+        <ul>
+          <li>Coeficientes <code>a</code> y <code>b</code> mediante fórmulas de regresión lineal.</li>
+          <li>El coeficiente de determinación <strong>R²</strong></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h2>4.2. Datos experimentales obtenidos</h2>
+
+<p>Ejecución en el entorno de desarrollo (Python 3, sin carga de trabajo adicional significativa):<br>
+Salida del script <code>python experiments_magic_square.py</code>:</p>
+
+<table>
+  <thead>
+    <tr><th>n</th><th>N = n²</th><th>Tiempo promedio (s)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>3</td><td>9</td><td>0.000004</td></tr>
+    <tr><td>5</td><td>25</td><td>0.000007</td></tr>
+    <tr><td>7</td><td>49</td><td>0.000011</td></tr>
+    <tr><td>9</td><td>81</td><td>0.000016</td></tr>
+    <tr><td>11</td><td>121</td><td>0.000023</td></tr>
+    <tr><td>15</td><td>225</td><td>0.000040</td></tr>
+    <tr><td>21</td><td>441</td><td>0.000072</td></tr>
+    <tr><td>25</td><td>625</td><td>0.000099</td></tr>
+    <tr><td>31</td><td>961</td><td>0.000151</td></tr>
+    <tr><td>41</td><td>1681</td><td>0.000260</td></tr>
+    <tr><td>51</td><td>2601</td><td>0.000413</td></tr>
+  </tbody>
+</table>
+
+
+<h2>4.3. Curva de mejor ajuste y R²</h2>
+
+<p>El propio script calcula el ajuste lineal T(N) = aN + b con N = n².<br>
+Con los datos anteriores se obtuvo:</p>
+
+<ul>
+  <li><strong>a</strong> ≈ <code>1.5627e-07</code> (pendiente, segundos por elemento)</li>
+  <li><strong>b</strong> ≈ <code>2.6959e-06</code> (ordenada en el origen)</li>
+  <li><strong>R²</strong> ≈ <code>0.999649</code></li>
+</ul>
+
+<p><strong>Interpretación:</strong></p>
+
+<ul>
+  <li>El valor de <strong>R²</strong> está muy cercano a 1, lo que indica que el modelo lineal en función de N = n² explica prácticamente toda la variabilidad observada en los tiempos medidos.</li>
+  <li>Esto concuerda con la predicción analítica de que: T̃(N) = Θ(N), con N = n², equivalente a: T̃(n) = Θ(n²).</li>
+</ul>
+
+<hr>
+
+<h1>5. Pruebas unitarias</h1>
+
+<p>Archivo: <code>test_matrix.py</code><br>
+Framework: <code>unittest</code> de la biblioteca estándar de Python.</p>
+
+<h2>5.1. Prueba de <code>equals</code> (__eq__)</h2>
+
+<ul>
+  <li><strong>Caso normal</strong>: Dos matrices con el mismo contenido, aunque una se cree con enteros y otra con <code>float</code>, deben ser iguales.</li>
+  <li><strong>Caso diferente</strong>: Dos matrices con solo un elemento distinto deben resultar no iguales.</li>
+</ul>
+
+<h2>5.2. Pruebas de suma</h2>
+
+<ul>
+  <li><strong>Caso normal</strong>: Suma de dos matrices 2×2 con valores pequeños y resultado esperado especificado a mano.</li>
+  <li><strong>Caso extremo</strong>: Intento de sumar matrices de dimensiones incompatibles (por ejemplo, 1×2 con 2×2); se espera <code>ValueError</code>.</li>
+</ul>
+
+<h2>5.3. Pruebas de multiplicación</h2>
+
+<ul>
+  <li><strong>Caso normal</strong>: Multiplicación de matrices de tamaños 2×3 y 3×2, con resultado calculado manualmente.</li>
+  <li><strong>Caso con identidad</strong>: Verificación de que A·I = A e I·A = A para una matriz identidad 3×3.</li>
+  <li><strong>Caso extremo</strong>: Dimensiones incompatibles (por ejemplo, 1×2 por 1×2); se espera <code>ValueError</code>.</li>
+</ul>
+
+<h2>5.4. Pruebas del algoritmo de cuadrados mágicos</h2>
+
+<ul>
+  <li><strong>Caso extremo mínimo</strong>: <code>n = 1</code>: el cuadrado mágico es simplemente <code>[1]</code>. Se verifica que <code>is_magic_square()</code> retorna <code>True</code>.</li>
+  <li><strong>Caso conocido clásico</strong>: <code>n = 3</code>: se compara con el patrón estándar:</li>
+</ul>
+
+<pre><code>8 1 6
+3 5 7
+4 9 2</code></pre>
+
+<ul>
+  <li>Se verifica igualdad elemento a elemento y que <code>is_magic_square()</code> es <code>True</code>.</li>
+  <li><strong>Caso normal adicional</strong>: <code>n = 5</code>: se verifica que el resultado cumple <code>is_magic_square() == True</code>.</li>
+  <li><strong>Casos inválidos</strong>: <code>n = 0</code>, <code>n = 2</code>, <code>n = -3</code>: en todos estos casos se espera <code>ValueError</code>.</li>
+</ul>
+
+</body>
+</html>
