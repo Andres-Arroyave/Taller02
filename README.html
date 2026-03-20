@@ -29,7 +29,7 @@
 
 <p><strong>Asignatura</strong>: Estructuras de Datos y Algoritmos<br>
 <strong>Tema</strong>: ADT Matriz, operaciones básicas y evaluación analítica / experimental<br>
-<strong>Integrantes (IDs)</strong>: 000528458, 000547528, 000558767<br>
+<strong>Integrantes (IDs)</strong>: Valeria Gomez Arcila 000528458, Carlos Andres Arroyave Londono 000547528, Miguel Angel Usuga Higuita 000558767<br>
 <strong>Concatenación usada para el hash</strong>: <code>000528458000547528000558767</code><br>
 <strong>SHA-256</strong>: <code>c1abe9b66a84944396ffa21eef659b785a7baeb030a72c0c213daff1c328b1d9</code><br>
 <strong>hashEquipo</strong>: 2 (módulo 5 del hash anterior)<br>
@@ -64,6 +64,7 @@
       <li>Cálculo de tiempos promedio (formato fijo <code>.f</code> en segundos).</li>
       <li>Escribe los datos en <strong>tiempos_cuadrados_magicos.csv</strong> para uso en Excel/LibreOffice.</li>
       <li>Ajuste de curva lineal y cálculo de <strong>R²</strong>.</li>
+      <li><strong>tiempos_cuadrados_magicos.xlsx</strong>: documento con los datos tabulados y la gráfica de tiempos promedio en función de N, incluyendo línea de tendencia lineal y valor de R².</li>
     </ul>
   </li>
 </ul>
@@ -323,7 +324,7 @@
   <li>Para el ajuste de curva:
     <ul>
       <li>Se toma N = n² como variable independiente.</li>
-      <li>Se ajusta un modelo lineal: T(N) ≈ a·N + b.</li>
+      <li>Se ajusta un modelo lineal:</li>
       <li>Se implementa una función <code>regresion_lineal(xs, ys)</code> que calcula:
         <ul>
           <li>Coeficientes <code>a</code> y <code>b</code> mediante fórmulas de regresión lineal.</li>
@@ -333,6 +334,13 @@
     </ul>
   </li>
 </ol>
+
+<p class="math">T(N) ≈ a·N + b</p>
+
+<p><strong>Nota metodológica:</strong><br>
+A diferencia de otros algoritmos sobre matrices, la generación de cuadrados mágicos no requiere una matriz de entrada aleatoria, ya que construye directamente la matriz resultado. Por tanto, la medición se realiza únicamente sobre el proceso de construcción del cuadrado mágico.</p>
+
+<p class="math">R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}</p>
 
 <h2>4.2. Datos experimentales obtenidos</h2>
 
@@ -376,6 +384,8 @@ Con los datos anteriores se obtuvo:</p>
   <li>El valor de <strong>R²</strong> está muy cercano a 1, lo que indica que el modelo lineal en función de N = n² explica prácticamente toda la variabilidad observada en los tiempos medidos.</li>
   <li>Esto concuerda con la predicción analítica de que: T̃(N) = Θ(N), con N = n², equivalente a: T̃(n) = Θ(n²).</li>
 </ul>
+
+<p>La alta correlación (R² ≈ 0.9996) confirma empíricamente que el algoritmo presenta un comportamiento lineal respecto a N, consistente con el análisis teórico T̃(N) = Θ(N).</p>
 
 <hr>
 

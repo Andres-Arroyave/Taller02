@@ -2,7 +2,7 @@
 
 **Asignatura**: Estructuras de Datos y Algoritmos  
 **Tema**: ADT Matriz, operaciones básicas y evaluación analítica / experimental  
-**Integrantes (IDs)**: 000528458, 000547528, 000558767  
+**Integrantes (IDs)**:  Valeria Gomez Arcila 000528458, Carlos Andres Arroyave Londono 000547528, Miguel Angel Usuga Higuita 000558767
 **Concatenación usada para el hash**: `000528458000547528000558767`  
 **SHA-256**: `c1abe9b66a84944396ffa21eef659b785a7baeb030a72c0c213daff1c328b1d9`  
 **hashEquipo**: 2 (módulo 5 del hash anterior)  
@@ -29,6 +29,9 @@
   - Cálculo de tiempos promedio (formato fijo `.f` en segundos).
   - Escribe los datos en `**tiempos_cuadrados_magicos.csv`** para uso en Excel/LibreOffice.
   - Ajuste de curva lineal y cálculo de **R²**.
+  - tiempos_cuadrados_magicos.xlsx:
+  Documento con los datos tabulados y la gráfica de tiempos promedio en función de N,
+  incluyendo línea de tendencia lineal y valor de R².
 
 ---
 
@@ -220,7 +223,13 @@ Pasos:
   - Se toma N = n^2 como variable independiente.
   - Se ajusta un modelo lineal:
 
-T(N) \approx a \cdot N + b
+  T(N) \approx a \cdot N + b
+
+  Nota metodológica:
+A diferencia de otros algoritmos sobre matrices, la generación de cuadrados
+mágicos no requiere una matriz de entrada aleatoria, ya que construye directamente
+la matriz resultado. Por tanto, la medición se realiza únicamente sobre el proceso
+de construcción del cuadrado mágico.
 
 - Se implementa una función `regresion_lineal(xs, ys)` que calcula:
   - Coeficientes `a` y `b` mediante fórmulas de regresión lineal.
@@ -228,7 +237,7 @@ T(N) \approx a \cdot N + b
 
 R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}
 
-#### 2.2. Datos experimentales obtenidos
+#### 4.2. Datos experimentales obtenidos
 
 Ejecución en el entorno de desarrollo (Python 3, sin carga de trabajo adicional significativa):  
 Salida del script `python experiments_magic_square.py`:
@@ -268,6 +277,10 @@ Interpretación:
 equivalente a:
 
 \tilde{T}(n) = \Theta(n^2)
+
+La alta correlación (R² ≈ 0.9996) confirma empíricamente que el algoritmo
+presenta un comportamiento lineal respecto a N, consistente con el análisis
+teórico T̃(N) = Θ(N).
 
 ---
 
